@@ -40,6 +40,8 @@ class NPC(Creature):
         self.curHp = newHealth
         self.ac = newAc
         self.initiative = newInitiative
+        self.tempHp = 0
+        self.status = {}
 
     def __repr__(self):
         return self.name
@@ -51,8 +53,8 @@ class NPC(Creature):
     def heal(self):
         numHeal = input('  heal: ')
         self.curHp += numHeal
-        if(curHp > maxHp):
-            self.curHp = maxHp
+        if(self.curHp > self.maxHp):
+            self.curHp = self.maxHp
                 
     def hit(self):
         numDmg = input('  damage: ')
@@ -93,13 +95,11 @@ class NPC(Creature):
 def getInit(creature):
     return creature.initiative
 
-def findCreature(creatures, name):
+def isCreature(creatures, toCheck):
     for creature in creatures:
-        if (creature.name == name):
-            return creature
-    return None
-
-
+        if (creature.name == toCheck):
+            return True
+    return False
 
 def getCreatures():
     creatures = []
@@ -108,13 +108,13 @@ def getCreatures():
         isPc = raw_input('PC, NPC, or done? ')
         if (isPc == 'PC' or isPc == 'pc' or isPc == 'p'):
             playerName = raw_input('  PC name: ')
-            while (findCreature(creatures, playerName)):
+            while (isCreature(creatures, playerName)):
                 playerName = raw_input('  Name taken. Try again: ')
             playerInitiative = input('  PC initiative: ')
             creatures.append(PC(playerName, playerInitiative))
         elif (isPc == 'NPC' or isPc == 'npc' or isPc == 'n'):
             name = raw_input('  NPC name: ')
-            while (findCreature(creatures, name)):
+            while (isCreature(creatures, name)):
                 name = raw_input('  Name taken. Try again: ')
             health = input('  NPC HP: ')
             ac = input('  NPC AC: ')
@@ -141,7 +141,6 @@ def update(creatures, current):
                     toDelete.append(effect)
         for item in toDelete:
             del curCreature.status[item]
-    #printTable(creatures, curCreature)
     
 def printTable(creatures, curCreatureNum):
     # lengths
@@ -150,34 +149,44 @@ def printTable(creatures, curCreatureNum):
     lenStatusLine = max(8, longestStatusName + 2)
     creatureHead = ' Creature ' + (' ' * (lenCreatureLine - 10))
     statusHead = ' Status ' + (' ' * (lenStatusLine - 8))
-    lenHead = 23 + lenCreatureLine + lenStatusLine
+    lenHead = 30 + lenCreatureLine + lenStatusLine
     # lines
     mainLine = '=' * lenHead + '\n'
     bigCreatureLine = '=' * lenCreatureLine
     littleCreatureLine = '-' * lenCreatureLine
     bigStatusLine = '=' * lenStatusLine
     littleStatusLine = '-' * lenStatusLine
-    bigSeparator = bigCreatureLine + '|====|=====|' + bigStatusLine + '|==========\n'
-    littleSeparator = littleCreatureLine + '|---|----|' + littleStatusLine + '|----------\n'
+    bigSeparator = bigCreatureLine + '|====|=====|=====|' + bigStatusLine + '|==========\n'
+    littleSeparator = littleCreatureLine + '|---|-----|-----|' + littleStatusLine \
+    + '|----------\n'
     # table creation
     table = mainLine + ' CURRENT: ' + curCreature.name + '\n' + mainLine + creatureHead \
-            + '| AC | HP  |' + statusHead + '| Duration\n' + bigSeparator
+            + '| AC | HP  | THP |' + statusHead + '| Duration\n' + bigSeparator
     for creature in creatures:
         table += ' ' + creature.name + ' ' + (' ' * (longestCreatureName - len(creature.name)))\
                  + '| '
         if isinstance(creature, PC):
-            table += '-  | -   | -      ' + (' ' * (lenStatusLine - 8)) +  '| -\n'
+            table += '-  | -   | -   | -   | - ' + (' ' * (lenStatusLine - 8)) +  '| -\n'
         else:
             acBuf = ' '
             if (creature.ac / 10 == 0):
                 acBuf += ' '
             table += str(creature.ac) + acBuf + '| '
+            
             hpBuf = ''
             if (creature.curHp / 100 == 0):
                 hpBuf += ' '
                 if (creature.curHp / 10 == 0):
                     hpBuf += ' '
-            table += str(creature.curHp) + hpBuf + ' |'
+            table += str(creature.curHp) + hpBuf + ' | '
+
+            thpBuf = ''
+            if (creature.tempHp / 100 == 0):
+                thpBuf += ' '
+                if (creature.tempHp / 10 == 0):
+                    thpBuf += ' '
+            table += str(creature.tempHp) + thpBuf + ' |'
+            
             if (creature.status == {}):
                 table += ' -' + (' ' * (lenStatusLine - 2)) +  '| -\n'
             else:
@@ -195,8 +204,14 @@ def printTable(creatures, curCreatureNum):
                     else:
                         table += str(creature.status[effect]) + '\n'
     table += mainLine[:-1]
-    os.system('clear')
+    # os.system('clear')
     print(table)
+
+def findCreature(creatures, toFind):
+    for creature in creatures:
+        if (creature.name == toFind):
+            return creature
+    return None
 
 def getTarget(creatures):
     targetString = raw_input('  target: ')
@@ -241,10 +256,32 @@ def runCombat(creatures):
             
         elif (action == 'add status' or action == 'stat'):
             targetCreature = getTarget(creatures)
+            while (isinstance(targetCreature, PC)):
+                print('  cannot target a PC')
+                targetCreature = getTarget(creatures)
             targetCreature.addStatus()
             
-        elif (action == 'remove stat' or action == 'unstat'):
+        elif (action == 'remove status' or action == 'unstat'):
+            targetCreature = getTarget(creatures)
+            while (isinstance(targetCreature, PC)):
+                print('  cannot target a PC')
+                targetCreature = getTarget(creatures)
             targetCreature.removeStatus()
+
+        elif (action == 'heal'):
+            targetCreature = getTarget(creatures)
+            while (isinstance(targetCreature, PC)):
+                print('  cannot target a PC')
+                targetCreature = getTarget(creatures)
+            targetCreature.heal()
+
+        elif (action == 'add temp hp' or action == 'temp'):
+            targetCreature = getTarget(creatures)
+            while (isinstance(targetCreature, PC)):
+                print('  cannot target a PC')
+                targetCreature = getTarget(creatures)
+            targetCreature.addTempHp()
+        
         printTable(creatures, curCreature)
 
 def main():
