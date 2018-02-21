@@ -47,5 +47,10 @@ Bug fixes
 
 Mid-combat creature additions, modifications
 
+Preset PCs, NPCs, and encounters from .json files
+
+Abbreviated references
+
+
 ### Footnotes
 <a name="footnote1">1</a>: If you aren't used to using a terminal, here's a nice introduction to [Unix](https://computers.tutsplus.com/tutorials/navigating-the-terminal-a-gentle-introduction--mac-3855) and [Windows](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/). All you really need are the directory commands (cd and ls in Unix, cd and dir in Windows).
