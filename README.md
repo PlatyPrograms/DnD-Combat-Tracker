@@ -43,4 +43,6 @@ A table will appear with the creatures listed in order of initiative, with the c
 
 ### Upcoming Features
 
-Bug fixes, as necessary; no features planned.
+Bug fixes
+
+Mid-combat creature additions, modifications
