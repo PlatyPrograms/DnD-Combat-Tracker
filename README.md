@@ -38,6 +38,8 @@ A table will appear with the creatures listed in order of initiative, with the c
 - `kill` or `remove`: prompts for a target, and slates it for death. Upon progressing to the next turn, it will be killed and removed from the table.
 - `add status` or `stat`: prompts for a target, status, and duration. For infinite duration, enter `-`. Statuses with finite durations will tick down each time it is the creature's turn. *NOTE:* does not work for PCs.
 - `remove status` or `unstat`: prompts for a target and a status. Removes the status immediately from the target.
+- `heal`: prompts for a target and a heal amount. Heals the target by that amount, or to max if health after heal would be over the creature's maximum HP.
+- `add temp hp` or `temp`: prompts for a target and an amount of temporary hp to add. Adds that to the target's existing pool of temporary hit points.
 
 ### Upcoming Features
 
