@@ -12,7 +12,7 @@ A (hopefully) easy-to-use command line combat tracker for Dungeons and Dragons.
 
 ### Starting up
 
-Simply type `python combat.py` into your favorite terminal.
+Simply open your favorite terminal, navigate to the directory where you store the file, and type `python combat.py`<sup>[1](#footnote1)</sup>
 
 ### Initializing creatures
 
@@ -46,3 +46,6 @@ A table will appear with the creatures listed in order of initiative, with the c
 Bug fixes
 
 Mid-combat creature additions, modifications
+
+### Footnotes
+<a name="footnote1">1</a>: If you aren't used to using a terminal, here's a nice introduction to [Unix](https://computers.tutsplus.com/tutorials/navigating-the-terminal-a-gentle-introduction--mac-3855) and [Windows](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/). All you really need is the directory commands (cd and ls in Unix, cd and dir in Windows).
