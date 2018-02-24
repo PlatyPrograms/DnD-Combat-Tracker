@@ -43,13 +43,15 @@ A table will appear with the creatures listed in order of initiative, with the c
 
 ### Upcoming Features
 
-Bug fixes
+(Roughly) in order:
 
-Mid-combat creature additions, modifications
+1. Abbreviated references
 
-Preset PCs, NPCs, and encounters from .json files
+2. Mid-combat creature additions, modifications
 
-Abbreviated references
+3. Streamlined command system
+
+4. Preset PCs, NPCs, and encounters from .json files
 
 
 ### Footnotes
