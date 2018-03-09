@@ -109,13 +109,13 @@ def getCreatures():
         if (isPc == 'PC' or isPc == 'pc' or isPc == 'p'):
             playerName = raw_input('  PC name: ')
             while (isCreature(creatures, playerName)):
-                playerName = raw_input('  Name taken. Try again: ')
+                playerName = raw_input('  Invalid name. Try again: ')
             playerInitiative = input('  PC initiative: ')
             creatures.append(PC(playerName, playerInitiative))
         elif (isPc == 'NPC' or isPc == 'npc' or isPc == 'n'):
             name = raw_input('  NPC name: ')
             while (isCreature(creatures, name)):
-                name = raw_input('  Name taken. Try again: ')
+                playerName = raw_input('  Invalid name. Try again: ')
             health = input('  NPC HP: ')
             ac = input('  NPC AC: ')
             initiative = input('  NPC initiative: ')
@@ -142,31 +142,43 @@ def update(creatures, current):
         for item in toDelete:
             del curCreature.status[item]
     
-def printTable(creatures, curCreatureNum):
+def printTable(creatures, curCreatureNum, message):
     # lengths
     curCreature = creatures[curCreatureNum]
     lenCreatureLine = max(10, longestCreatureName + 2)
     lenStatusLine = max(8, longestStatusName + 2)
     creatureHead = ' Creature ' + (' ' * (lenCreatureLine - 10))
     statusHead = ' Status ' + (' ' * (lenStatusLine - 8))
-    lenHead = 30 + lenCreatureLine + lenStatusLine
+    lenHead = 35 + lenCreatureLine + lenStatusLine
     # lines
     mainLine = '=' * lenHead + '\n'
     bigCreatureLine = '=' * lenCreatureLine
     littleCreatureLine = '-' * lenCreatureLine
     bigStatusLine = '=' * lenStatusLine
     littleStatusLine = '-' * lenStatusLine
-    bigSeparator = bigCreatureLine + '|====|=====|=====|' + bigStatusLine + '|==========\n'
+    bigSeparator = bigCreatureLine + '|=====|====|=====|=====|' + bigStatusLine + '|==========\n'
     littleSeparator = littleCreatureLine + '|---|-----|-----|' + littleStatusLine \
     + '|----------\n'
     # table creation
-    table = mainLine + ' CURRENT: ' + curCreature.name + '\n' + mainLine + creatureHead \
-            + '| AC | HP  | THP |' + statusHead + '| Duration\n' + bigSeparator
+    if (message != ''):
+        table = message + '\n'
+    else:
+        table = ''
+    table += mainLine + ' CURRENT: ' + curCreature.name + '\n' + mainLine + creatureHead \
+            + '| No. | AC | HP  | THP |' + statusHead + '| Duration\n' + bigSeparator
+    index = 0
     for creature in creatures:
         table += ' ' + creature.name + ' ' + (' ' * (longestCreatureName - len(creature.name)))\
                  + '| '
+        table += str(index) + ' '
+        if (index < 100):
+            table += ' '
+        if (index < 10):
+            table += ' '
+        table += '| '
+        index += 1
         if isinstance(creature, PC):
-            table += '-  | -   | -   | -   | - ' + (' ' * (lenStatusLine - 8)) +  '| -\n'
+            table += '-  | -   | -   | - ' + (' ' * (lenStatusLine - 3)) +  '| -\n'
         else:
             acBuf = ' '
             if (creature.ac / 10 == 0):
@@ -204,13 +216,23 @@ def printTable(creatures, curCreatureNum):
                     else:
                         table += str(creature.status[effect]) + '\n'
     table += mainLine[:-1]
-    # os.system('clear')
+    os.system('clear')
     print(table)
 
 def findCreature(creatures, toFind):
-    for creature in creatures:
-        if (creature.name == toFind):
-            return creature
+    try:
+        toFind = int(toFind)
+        ret = creatures[toFind]
+        toFind = str(toFind)
+        for creature in creatures:
+            if (creature.name == toFind):
+                print('Creature found with name ' + toFind + \
+                      '. Please note that index overrides name.')
+        return ret
+    except:
+        for creature in creatures:
+            if (creature.name == toFind):
+                return creature
     return None
 
 def getTarget(creatures):
@@ -225,16 +247,18 @@ def runCombat(creatures):
     print('starting combat')
     action = ''
     curCreature = 0
-    printTable(creatures, curCreature)
+    printTable(creatures, curCreature, '')
     toKill = []
     while (action != 'end' and action != 'done'):
+        message = ''
         action = raw_input('action: ')
         if (action == 'next turn' or action == 'next' or action == 'n'):
             for dead in toKill:
+                message += 'Killed ' + dead.name + '\n'
                 creatures.remove(dead)
             toKill = []
             if (len(creatures) <= 0):
-                print("they're all dead!")
+                print("They're all dead!")
                 break
             curCreature += 1
             if (curCreature >= len(creatures)):
@@ -243,51 +267,57 @@ def runCombat(creatures):
 
         elif (action == 'hit' or action == 'damage'):
             targetCreature = getTarget(creatures)
-            while (isinstance(targetCreature, PC)):
-                print('  cannot target a PC')
-                targetCreature = getTarget(creatures)
-            isDead = targetCreature.hit()
-            if isDead:
-                toKill.append(targetCreature)
+            if (isinstance(targetCreature, PC)):
+                message = 'cannot target a PC'
+            else:
+                message = 'Hit ' + targetCreature.name
+                isDead = targetCreature.hit()
+                if isDead:
+                    toKill.append(targetCreature)
 
         elif (action == 'kill' or action == 'remove'):
             targetCreature = getTarget(creatures)
+            message = 'Marked ' + targetCreature.name + ' for death'
             toKill.append(targetCreature)
             
         elif (action == 'add status' or action == 'stat'):
             targetCreature = getTarget(creatures)
-            while (isinstance(targetCreature, PC)):
-                print('  cannot target a PC')
-                targetCreature = getTarget(creatures)
-            targetCreature.addStatus()
+            if (isinstance(targetCreature, PC)):
+                message = 'cannot target a PC'
+            else:
+                message = 'Added a status to ' + targetCreature.name
+                targetCreature.addStatus()
             
         elif (action == 'remove status' or action == 'unstat'):
             targetCreature = getTarget(creatures)
-            while (isinstance(targetCreature, PC)):
-                print('  cannot target a PC')
-                targetCreature = getTarget(creatures)
-            targetCreature.removeStatus()
+            if (isinstance(targetCreature, PC)):
+                message = 'cannot target a PC'
+            else:
+                message = 'Removed a status from ' + targetCreature.name
+                targetCreature.removeStatus()
 
         elif (action == 'heal'):
             targetCreature = getTarget(creatures)
-            while (isinstance(targetCreature, PC)):
-                print('  cannot target a PC')
-                targetCreature = getTarget(creatures)
-            targetCreature.heal()
+            if (isinstance(targetCreature, PC)):
+                message = 'cannot target a PC'
+            else:
+                message = 'Healed ' + targetCreature.name
+                targetCreature.heal()
 
         elif (action == 'add temp hp' or action == 'temp'):
             targetCreature = getTarget(creatures)
-            while (isinstance(targetCreature, PC)):
-                print('  cannot target a PC')
-                targetCreature = getTarget(creatures)
-            targetCreature.addTempHp()
+            if (isinstance(targetCreature, PC)):
+                message = 'cannot target a PC'
+            else:
+                message = 'Added temporary HP to ' + targetCreature.name
+                targetCreature.addTempHp()
         
-        printTable(creatures, curCreature)
+        printTable(creatures, curCreature, message)
 
 def main():
     creatures = getCreatures()
     creatures.sort(key=getInit, reverse=True)
-    print(creatures)
+    # print(creatures)
     runCombat(creatures)
 
 main()
