@@ -1,5 +1,6 @@
 from operator import attrgetter
 import os
+import json
 
 longestCreatureName = 8
 longestStatusName = 6
@@ -126,7 +127,7 @@ def getCreatures():
 
 def addCreatures(existingCreatures):
     newCreatures = getCreatures()
-    existingCreatures.append(newCreatures)
+    existingCreatures.extend(newCreatures)
     existingCreatures.sort(key=getInit, reverse = True)
 
 def update(creatures, current):
@@ -315,7 +316,13 @@ def runCombat(creatures):
         printTable(creatures, curCreature, message)
 
 def main():
-    creatures = getCreatures()
+    creatures = []
+    if os.path.isfile("players.json"):
+        with open("players.json") as players:
+            pcNames = json.load(players)["names"]
+        creatures = [PC(name, input('  {} initiative: '.format(name)))
+                     for name in pcNames]
+    addCreatures(creatures)
     creatures.sort(key=getInit, reverse=True)
     # print(creatures)
     runCombat(creatures)
