@@ -18,6 +18,9 @@ class Creature(object):
     def __repr__(self):
         return self.name
 
+    def rename(self, newName):
+        self.name = newName
+
 class PC(Creature):
 
     def __init__(self, newName, newInitiative):
@@ -126,8 +129,9 @@ def getCreatures():
 
 def addCreatures(existingCreatures):
     newCreatures = getCreatures()
-    existingCreatures.append(newCreatures)
-    existingCreatures.sort(key=getInit, reverse = True)
+    for toAdd in newCreatures:
+        existingCreatures.append(toAdd)
+    existingCreatures.sort(key=getInit, reverse=True)
 
 def update(creatures, current):
     # UPDATE STATUSES
@@ -141,7 +145,7 @@ def update(creatures, current):
                     toDelete.append(effect)
         for item in toDelete:
             del curCreature.status[item]
-    
+            
 def printTable(creatures, curCreatureNum, message):
     # lengths
     curCreature = creatures[curCreatureNum]
@@ -242,7 +246,7 @@ def getTarget(creatures):
         targetString = raw_input('  invalid target, try again: ')
         targetCreature = findCreature(creatures, targetString)
     return targetCreature
-    
+
 def runCombat(creatures):
     print('starting combat')
     action = ''
@@ -256,14 +260,14 @@ def runCombat(creatures):
             for dead in toKill:
                 message += 'Killed ' + dead.name + '\n'
                 creatures.remove(dead)
-            toKill = []
+                toKill = []
             if (len(creatures) <= 0):
                 print("They're all dead!")
                 break
             curCreature += 1
             if (curCreature >= len(creatures)):
                 curCreature = 0
-            update(creatures, curCreature)
+                update(creatures, curCreature)
 
         elif (action == 'hit' or action == 'damage'):
             targetCreature = getTarget(creatures)
@@ -287,7 +291,7 @@ def runCombat(creatures):
             else:
                 message = 'Added a status to ' + targetCreature.name
                 targetCreature.addStatus()
-            
+                
         elif (action == 'remove status' or action == 'unstat'):
             targetCreature = getTarget(creatures)
             if (isinstance(targetCreature, PC)):
@@ -311,13 +315,21 @@ def runCombat(creatures):
             else:
                 message = 'Added temporary HP to ' + targetCreature.name
                 targetCreature.addTempHp()
+
+        elif (action == 'add creatures' or action == 'add'):
+            addCreatures(creatures)
+            creatures.sort(key=getInit, reverse=True)
+
+        elif (action == 'rename'):
+            targetCreature = getTarget(creatures)
+            newName = raw_input('New name: ')
+            targetCreature.rename(newName)
         
         printTable(creatures, curCreature, message)
 
 def main():
     creatures = getCreatures()
     creatures.sort(key=getInit, reverse=True)
-    # print(creatures)
     runCombat(creatures)
 
 main()
