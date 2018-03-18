@@ -40,17 +40,16 @@ A table will appear with the creatures listed in order of initiative, with the c
 - `remove status` or `unstat`: prompts for a target and a status. Removes the status immediately from the target.
 - `heal`: prompts for a target and a heal amount. Heals the target by that amount, or to max if health after heal would be over the creature's maximum HP.
 - `add temp hp` or `temp`: prompts for a target and an amount of temporary hp to add. Adds that to the target's existing pool of temporary hit points.
+- `add creatures` or `add`: lets you enter creatures as you do at the beginning of combat, and puts them into the initiative order.
+- `rename`: prompts for a target, a new name, and changes the target name to the new name.
 
 ### Upcoming Features
 
 (Roughly) in order:
 
-1. Mid-combat creature additions, modifications
+1. Streamlined command system
 
-2. Streamlined command system
-
-3. Preset PCs, NPCs, and encounters from .json files
-
+2. Preset PCs, NPCs, and encounters from .json files
 
 ### Footnotes
 <a name="footnote1">1</a>: If you aren't used to using a terminal, here's a nice introduction to [Unix](https://computers.tutsplus.com/tutorials/navigating-the-terminal-a-gentle-introduction--mac-3855) and [Windows](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/). All you really need are the directory commands (cd and ls in Unix, cd and dir in Windows).
@@ -59,3 +58,6 @@ A table will appear with the creatures listed in order of initiative, with the c
 - 2018.03.09
   - Added an abbreviated reference system: assigns each creature a number that can be used to target them instead of the verbose name
   - Added the ability to load players from .json files to experimental branch
+- 2018.03.18
+  - Added the ability to add creatures mid-combat
+  - Added the ability to rename creatures mid-combat
