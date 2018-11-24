@@ -1,3 +1,5 @@
+# NOTE: THIS (AND SOME OF MY OTHER WORK) NOW LIVES OVER HERE: https://github.com/EricBAndrews/
+
 ## D&D Combat Tracker
 
 A (hopefully) easy-to-use command line combat tracker for Dungeons and Dragons.
